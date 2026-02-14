@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "Keep Safe",
+  "version": "1.2.0",
+  "description": "Real-time AI-powered link verification and forensic analysis to prevent phishing, gambling, and adult content.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "webNavigation",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://www.google.com/*",
+    "*://www.bing.com/*",
+    "*://duckduckgo.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "utils.js",
+        "thumbnail_analyzer.js",
+        "content.js"
+      ],
+      "css": [
+        "style.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "utils.js",
+        "thumbnail_analyzer.js",
+        "style.css",
+        "blacklist.json",
+        "injector.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "offline_enabled": true
+}

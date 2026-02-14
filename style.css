@@ -1,0 +1,494 @@
+/* Keep Safe Design System - Glassmorphism & High Contrast */
+:root {
+    --primary: #3182ce;
+    --primary-hover: #2b6cb0;
+    --danger: #e53e3e;
+    --success: #38a169;
+    --warning: #d69e2e;
+
+    /* Light Theme (Glass) - Enhanced */
+    --glass-bg: rgba(255, 255, 255, 0.92);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --text-main: #1a202c;
+    --text-muted: #4a5568;
+    --card-shadow: 0 12px 40px rgba(31, 38, 135, 0.15);
+    --body-bg: #f7fafc;
+}
+
+body.dark-mode {
+    --glass-bg: rgba(15, 23, 42, 0.94);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    --body-bg: #0f172a;
+}
+
+/* Scoped Body Style for Popup/Analysis */
+.keep-safe-body {
+    background-color: var(--body-bg);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    margin: 0;
+    transition: background-color 0.3s ease;
+}
+
+/* Glassmorphism Base (Internal Use) */
+.keep-safe-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--card-shadow);
+}
+
+/* Extension Popup Specific */
+.popup-container {
+    width: 220px;
+    padding: 15px;
+    margin: 0;
+    box-sizing: border-box;
+    border-radius: 0;
+    /* Corner radius handled by body if it were a window, but popup is a frame */
+}
+
+/* Forensic Report Scoping - Solid Background */
+.keep-safe-report {
+    background-color: var(--body-bg);
+    color: var(--text-main);
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Forensic Report UI */
+.keep-safe-report .header {
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.keep-safe-report .header h2 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.keep-safe-report .result-card {
+    background: var(--glass-bg);
+    /* Still uses glass variables but usually on solid body anyway */
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--card-shadow);
+}
+
+.keep-safe-report h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+
+.keep-safe-report ul {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.keep-safe-report li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+    font-size: 0.9rem;
+}
+
+.keep-safe-report .detail-item {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.keep-safe-report .detail-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.keep-safe-report .url-box {
+    word-break: break-all;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px solid var(--glass-border);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--primary);
+}
+
+body.dark-mode .keep-safe-report .url-box {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.popup-container .header {
+    padding: 8px 0;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 13px;
+}
+
+/* Simple Toggle Switch (Kept for Enabled toggle) */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e0;
+    transition: .3s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--success);
+}
+
+input:checked+.slider:before {
+    transform: translateX(16px);
+}
+
+/* Tooltip Design */
+#antigravity-link-verifier-tooltip {
+    position: fixed !important;
+    z-index: 2147483647 !important;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.15s;
+    white-space: nowrap;
+    max-width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    backdrop-filter: blur(60px) saturate(250%);
+    -webkit-backdrop-filter: blur(60px) saturate(250%);
+    display: none;
+    opacity: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#antigravity-link-verifier-tooltip.visible {
+    display: block;
+    opacity: 1;
+}
+
+#antigravity-link-verifier-tooltip.neutral {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+#antigravity-link-verifier-tooltip.dark-mode.neutral {
+    background: rgba(15, 23, 42, 0.8) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Threat Themes */
+#antigravity-link-verifier-tooltip.danger,
+#antigravity-link-verifier-tooltip.porn,
+#antigravity-link-verifier-tooltip.gambling {
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#antigravity-link-verifier-tooltip.suspicious,
+#antigravity-link-verifier-tooltip.phishing {
+    /* Merged deceptive theme */
+    background: linear-gradient(135deg, rgba(214, 158, 46, 0.75), rgba(183, 121, 31, 0.75)) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    font-weight: 700 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+#antigravity-link-verifier-tooltip.danger {
+    background: linear-gradient(135deg, rgba(229, 62, 62, 0.75), rgba(155, 44, 44, 0.75));
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Removed redundant suspicious definition as it's merged above */
+
+#antigravity-link-verifier-tooltip.porn {
+    background: linear-gradient(135deg, rgba(197, 48, 48, 0.75), rgba(130, 39, 39, 0.75));
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+#antigravity-link-verifier-tooltip.gambling {
+    background: linear-gradient(135deg, rgba(192, 86, 33, 0.75), rgba(123, 52, 30, 0.75));
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+#antigravity-link-verifier-tooltip.safe {
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.75), rgba(56, 161, 105, 0.75)) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    font-weight: 700 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Phishing handled by merged suspicious style above */
+
+.keep-safe-report .action-btn {
+    background: #3182ce;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.keep-safe-report .action-btn:hover {
+    background: #2b6cb0;
+}
+
+/* Inline Forensic Modal */
+#keep-safe-forensic-modal {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 380px !important;
+    max-height: 80vh !important;
+    z-index: 2147483647 !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.2s, transform 0.2s;
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    color: var(--text-main) !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: var(--card-shadow) !important;
+}
+
+#keep-safe-forensic-modal.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#keep-safe-forensic-modal.ks-dragging {
+    transition: none !important;
+}
+
+.ks-modal-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.1);
+    cursor: move;
+}
+
+.ks-modal-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--primary);
+}
+
+.ks-modal-controls button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    color: var(--text-main);
+}
+
+.ks-modal-controls button:hover {
+    opacity: 1;
+}
+
+.ks-modal-controls #ks-pin-btn.active {
+    opacity: 1;
+    filter: drop-shadow(0 0 5px var(--primary));
+}
+
+#ks-modal-body {
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.ks-loading {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.ks-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.ks-badge-neutral {
+    background: #cbd5e0;
+    color: #1a202c;
+}
+
+.ks-badge-warning {
+    background: #f6ad55;
+    color: #1a202c;
+}
+
+.ks-badge-danger {
+    background: #e53e3e;
+    color: white;
+}
+
+.ks-url-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    word-break: break-all;
+    margin-bottom: 12px;
+    color: var(--primary);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.ks-detail-item {
+    font-size: 12px;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.ks-text-danger {
+    color: #e53e3e;
+}
+
+.ks-text-warning {
+    color: #d69e2e;
+}
+
+.ks-technical {
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 1px solid var(--glass-border);
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.ks-modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.ks-action-btn {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ks-action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.ks-action-btn.primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.ks-action-btn.primary:hover {
+    background: var(--primary-hover);
+}
+
+/* Full Page Blocking Overlay Backdrop */
+.ks-block-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(30px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+    z-index: 2147483647 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.ks-block-overlay.visible {
+    opacity: 1 !important;
+}

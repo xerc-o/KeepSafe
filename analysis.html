@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keep Safe Forensic Analysis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="keep-safe-body">
+    <div class="keep-safe-report">
+        <div class="header">
+            <h2>🛡️ Keep Safe Forensic Report</h2>
+        </div>
+
+        <div id="loading">Analyzing link forensics...</div>
+
+        <div id="report" style="display:none;">
+            <div class="result-card" id="risk-card">
+                <div class="detail-item">
+                    <span class="detail-label">Risk Level:</span>
+                    <span id="risk-level" class="risk-badge">Analyzing...</span>
+                </div>
+                <div class="url-box" id="target-url"></div>
+            </div>
+
+            <div class="result-card" id="forensic-details-section">
+                <h3>Forensic Details</h3>
+                <ul id="forensic-list"></ul>
+            </div>
+
+            <div class="result-card" id="advanced-forensics" style="display:none;">
+                <h3>Technical Reputation & Heuristics</h3>
+                <div class="detail-item">
+                    <span class="detail-label">Subdomain Entropy:</span>
+                    <span id="subdomain-entropy">N/A</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">TLD Risk Level:</span>
+                    <span id="tld-risk">LOW</span>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>Domain Info</h3>
+                <div class="detail-item"><span class="detail-label">Hostname:</span> <span id="domain-host"></span>
+                </div>
+                <div class="detail-item"><span class="detail-label">Protocol:</span> <span id="domain-proto"></span>
+                </div>
+                <div class="detail-item"><span class="detail-label">Is IP Address?</span> <span id="is-ip"></span></div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <a href="#" id="whois-link" target="_blank" class="action-btn">Whois Lookup</a>
+                <a href="#" id="google-safe-link" target="_blank" class="action-btn">Google Safe Check</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="analysis.js"></script>
+</body>
+
+</html>

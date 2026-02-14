@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Link Verifier Test Page</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 50px;
+            line-height: 1.6;
+        }
+
+        .test-case {
+            margin-bottom: 30px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Link Verifier Test Scenarios</h1>
+
+    <div class="test-case">
+        <span class="label">1. Safe HTTPS Link:</span>
+        <a href="https://www.google.com">Go to Google (HTTPS)</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">2. Insecure HTTP Link:</span>
+        <a href="http://example.com">Go to Example (HTTP)</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">3. Phishing Mismatch:</span>
+        <a href="https://scam-site.net">paypal.com</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">4. Script/onclick:</span>
+        <button onclick="alert('Phishing detected?')">Click for Alert</button>
+    </div>
+
+    <div class="test-case">
+        <span class="label">5. Login Form Button:</span>
+        <form action="https://secure-login.com/auth">
+            <button type="submit">Login Now</button>
+        </form>
+    </div>
+
+    <div class="test-case">
+        <span class="label">6. Button with role:</span>
+        <div role="button" tabindex="0"
+            style="cursor:pointer; background:#eee; display:inline-block; padding:5px 10px;">Role Button</div>
+    </div>
+
+    <div class="test-case">
+        <span class="label">6. Judol (Gambling) Pattern:</span>
+        <a href="https://slot-gacor-maxwin-jp.net">Main Slot Gacor Hari Ini</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">7. Scam / Promo Pattern:</span>
+        <a href="http://hadiah-gratis-anda.com/claim">Klik untuk Klaim Hadiah Gratis!</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">8. Brand Spoofing (Phishing):</span>
+        <a href="https://bank-bca-official.security-update.com">Update Akun BCA Anda</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">9. Hijacked Domain Pattern (e.g., Academy to Judol):</span>
+        <p>Current Page Domain:
+            <script>document.write(window.location.hostname || 'local-test.com')</script>
+        </p>
+        <a href="https://linkfast.asia/king88">Login Portal (linkfast.asia)</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">10. SEO Spam Domain (Long/Hyphens):</span>
+        <a href="https://situs-slot-gacor-terpercaya-hari-ini-2026.online">Visit Official Slot Partner</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">11. High-Risk TLD (.xyz):</span>
+        <a href="https://secure-auth-login.xyz">Verify Identity</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">12. Threat Context Button (No URL):</span>
+        <button class="btn"
+            style="background:#ffc107; color:black; padding:5px 10px; border:none; cursor:pointer;">Panduan Instalasi
+            APK Judol</button>
+        <p><small>(This button has no href or form but contains high-risk keywords)</small></p>
+    </div>
+
+    <div class="test-case" style="border: 5px solid #ff4444; padding: 20px; background: #1a1a1a; color: white;">
+        <h1 style="color: #ff9800;">SLOT GACOR ONLINE - KING88 JP MAXWIN</h1>
+        <p>This section simulates a hijacked "Kinder/Academy" page.</p>
+        <span class="label">13. Innocent-looking Cross-link on Threat Page:</span>
+        <a href="https://www.washingtonvalleypharmacy.com">Visit Pharmacy Partner</a>
+        <p><small>(On a threat page, even unrelated external links like this should be flagged as [SUSPICIOUS
+                CONNECTION])</small></p>
+    </div>
+
+    <div class="test-case" style="border: 5px solid #ffeb3b; padding: 20px; background: #000; color: #fff;">
+        <h2 style="color: #ffeb3b; font-family: serif;">ZEUS88 - OFFICIAL SLOTS</h2>
+        <p>This simulates being on a direct gambling domain (zeus88.com).</p>
+        <span class="label">14. Internal Link on Gambling Site:</span>
+        <a href="https://zeus88.com/slots/habanero">Play Habanero Slots</a>
+        <p><small>(Even internal links on a direct Judol domain should now be flagged as [DANGER] or
+                [SUSPICIOUS])</small></p>
+    </div>
+
+    <div class="test-case" style="border: 2px solid #673ab7; padding: 15px; background: #f3e5f5;">
+        <h3 style="color: #512da8;">15. Blacklist System Tests</h3>
+        <p><small>(These domains are explicitly listed in <code>blacklist.json</code>)</small></p>
+
+        <span class="label">Blacklisted Judol:</span>
+        <a href="https://slotgacor.xyz">slotgacor.xyz</a>
+        <br><br>
+
+        <span class="label">Blacklisted Adult:</span>
+        <a href="https://porn-hub.com">porn-hub.com</a>
+        <br><br>
+
+        <span class="label">Blacklisted Phishing:</span>
+        <a href="https://phishing-test.com">phishing-test.com</a>
+        <br><br>
+
+        <span class="label">Keyword Match (porn):</span>
+        <a href="https://example.com/watch-porn-video">example.com/watch-porn-video</a>
+    </div>
+
+    <div class="test-case">
+        <span class="label">17. AJAX Fetch (Suspicious):</span>
+        <button onclick="fetch('https://slotgacor.xyz/api/test').catch(e=>console.log('Ajax blocked/failed'))">Trigger
+            AJAX Fetch</button>
+        <p><small>Check console or wait for tooltip update after clicking.</small></p>
+    </div>
+
+    <div class="test-case">
+        <span class="label">18. AJAX XHR (Suspicious):</span>
+        <button id="xhr-btn">Trigger AJAX XHR</button>
+        <script>
+            document.getElementById('xhr-btn').onclick = function () {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', 'https://zeus88.com/status');
+                xhr.send();
+            };
+        </script>
+    </div>
+
+    <div class="test-case">
+        <span class="label">19. Mouse Events (onmousedown):</span>
+        <div onmousedown="console.log('mousedown')" style="padding:10px; border:1px solid blue; cursor:pointer;">
+            Element with onmousedown
+        </div>
+    </div>
+
+    <div class="test-case">
+        <span class="label">20. Pure Button (No child spans/divs):</span>
+        <button>Executabe Button Text</button>
+    </div>
+
+    <div class="test-case">
+        <span class="label">21. Interactive Class (clickable):</span>
+        <p class="clickable" style="color: blue; text-decoration: underline; cursor: pointer;">This is a clickable
+            paragraph</p>
+    </div>
+
+    <div class="test-case">
+        <span class="label">22. JavaScript Link (pseudo-protocol):</span>
+        <a href="javascript:alert('pola gacor maxwin')">Klik Pola Gacor</a>
+    </div>
+
+</body>
+
+</html>
