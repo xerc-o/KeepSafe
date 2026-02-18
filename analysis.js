@@ -98,10 +98,9 @@ function performAnalysis(url, linkText, blacklistData) {
     // Trusted Domain / Verified Platform Check
     const trustType = Utils.getTrustType(hostname);
     if (trustType === 'trusted-domain') {
-        riskScore -= 200; // Strong negative score
+        riskScore -= 200;
         addDetail(ul, 'Trusted Domain detected', 'safe');
     } else if (trustType === 'verified-platform') {
-        // Large platforms are generally safe but we reduce score less strongly
         riskScore -= 100;
         addDetail(ul, 'Verified Platform detected', 'safe');
     } else if (hostname.endsWith('.go.id') || hostname.endsWith('.gov')) {

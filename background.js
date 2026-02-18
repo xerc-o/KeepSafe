@@ -1,17 +1,13 @@
 let lastLinkInfo = { text: '', url: '' };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'CONTEXT_MENU_TARGET') {
+    if (message.type === 'CONTEXT_MENU_TARGET' && message.text && message.href) {
         lastLinkInfo = { text: message.text, url: message.href };
     }
 
     if (message.action === 'scanComplete') {
         const decision = message.decision;
-        if (decision.block) {
-            // Option 1: Full redirect (requested by concept)
-            // chrome.tabs.update(sender.tab.id, { url: chrome.runtime.getURL('blocked.html') + '?reason=' + encodeURIComponent(decision.reason) });
-
-            // Option 2: Increment counter and let content.js show the premium overlay (current implementation)
+        if (decision && decision.block && sender.tab && sender.tab.id) {
             incrementBlockedCounter();
         }
     }

@@ -380,7 +380,7 @@
 
     /**
      * UNIFIED ANALYSIS ENGINE
-     * Shared by tooltip and forensic modal
+     * Shared by tooltip and forensic modal - single source of truth for threat assessment
      */
     async function performFullAnalysis(url, linkText) {
         let score = 0;
@@ -388,33 +388,50 @@
         let state = 'neutral';
 
         let urlObj;
-        try { urlObj = new URL(url); } catch (e) { return { state: 'neutral', details: [{ text: 'Invalid URL', type: 'danger' }], hostname: 'N/A', tld: 'N/A', entropy: 0, score: 0 }; }
+        try { urlObj = new URL(url); } catch (e) { 
+            return { 
+                state: 'neutral', 
+                details: [{ text: 'Invalid URL', type: 'danger' }], 
+                hostname: 'N/A', 
+                tld: 'N/A', 
+                entropy: 0, 
+                score: 0 
+            }; 
+        }
 
         const hostname = urlObj.hostname.toLowerCase();
         const tld = hostname.split('.').pop().toLowerCase();
         const pageSourceDomain = window.location.hostname.toLowerCase();
 
-        // 1. Trusted Domains / Verified Platforms
-        if (Utils.isTrusted(hostname) || hostname.endsWith('.go.id') || hostname.endsWith('.gov') || Utils.getTrustType(hostname)) {
-            const trustType = Utils.getTrustType(hostname) || (hostname.endsWith('.go.id') || hostname.endsWith('.gov') ? 'trusted-domain' : null);
-            const trustLabel = Utils.getTrustLabel(trustType) || (hostname.endsWith('.go.id') || hostname.endsWith('.gov') ? 'Official Government Domain' : 'Trusted');
-            return { state: 'safe', details: [{ text: trustLabel, type: 'success' }], hostname, tld, entropy: 0, score: 0 };
+        // 1. Check Trust Type (Consolidated - reuse getTrustType)
+        const trustType = Utils.getTrustType(hostname);
+        if (trustType || hostname.endsWith('.go.id') || hostname.endsWith('.gov')) {
+            const trustLabel = Utils.getTrustLabel(trustType) || 
+                              (hostname.endsWith('.go.id') || hostname.endsWith('.gov') ? 'Official Government Domain' : 'Trusted');
+            return { 
+                state: 'safe', 
+                details: [{ text: trustLabel, type: 'success' }], 
+                hostname, 
+                tld, 
+                entropy: 0, 
+                score: 0 
+            };
         }
 
-        // 2. Direct IP Address
+        // 2. Direct IP Address Check
         if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
             score += 30;
             details.push({ text: 'Direct IP Address detected (Unusual for legitimate sites)', type: 'danger' });
         }
 
-        // 3. Phishing / Deceptive UI
+        // 3. Phishing / Deceptive UI Detection
         if (linkText) {
             const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})(\/[^\s]*)?$/i;
             const trimmedText = linkText.trim();
             if (urlPattern.test(trimmedText)) {
                 try {
                     const textUrlInfo = new URL(trimmedText.startsWith('http') ? trimmedText : `http://${trimmedText}`);
-                    if (!Utils.isTrusted(hostname) && Utils.getBaseDomain(textUrlInfo.hostname) !== Utils.getBaseDomain(hostname)) {
+                    if (Utils.getBaseDomain(textUrlInfo.hostname) !== Utils.getBaseDomain(hostname)) {
                         score += 150;
                         state = 'suspicious';
                         details.push({ text: `[SUSPICIOUS] Deceptive Link UI: Says ${textUrlInfo.hostname} but leads to ${hostname}`, type: 'danger' });
@@ -423,7 +440,7 @@
             }
         }
 
-        // 4. Blacklist
+        // 4. Blacklist Check
         const blacklisted = Utils.checkBlacklist(hostname, blacklistData);
         if (blacklisted) {
             score += 150;
@@ -431,23 +448,25 @@
             details.push({ text: `Verified Threat: ${Utils.getCategoryLabel(blacklisted)}`, type: 'danger' });
         }
 
-        // 5. Heuristics
+        // 5. Heuristic Analysis
         const heuristic = Utils.getHeuristicScore(url, hostname);
         score += heuristic.score;
-        if (heuristic.score > 20) details.push({ text: `Anomalous pattern detected (Pattern Score: ${heuristic.score})`, type: 'danger' });
+        if (heuristic.score > 20) {
+            details.push({ text: `Anomalous pattern detected (Pattern Score: ${heuristic.score})`, type: 'danger' });
+        }
 
-        // 6. Global Context
+        // 6. Cross-Domain Context Risk
         if (pageIsThreat && !Utils.isSameBaseDomain(hostname, pageSourceDomain)) {
             score += 10;
             details.push({ text: 'High Risk Context: Link from threat page to external domain', type: 'warning' });
         }
 
-        // Final State mapping
+        // 7. Final State Mapping
         if (state === 'neutral') {
-            if (score >= 20 || state === 'suspicious') state = 'danger';
+            if (score >= 20) state = 'danger';
             else if (score >= 8) state = 'suspicious';
 
-            // Refine category if suspicious
+            // Refine threat category based on content patterns
             if (state !== 'neutral' && state !== 'safe') {
                 if (Utils.isGamblingText(url) || Utils.isGamblingText(linkText || '')) state = 'gambling';
                 else if (Utils.isPornText(url) || Utils.isPornText(linkText || '')) state = 'porn';
@@ -455,7 +474,9 @@
             }
         }
 
-        if (details.length === 0) details.push({ text: 'No immediate threats detected.', type: 'neutral' });
+        if (details.length === 0) {
+            details.push({ text: 'No immediate threats detected.', type: 'neutral' });
+        }
 
         return {
             state,

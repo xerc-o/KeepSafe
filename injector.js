@@ -2,6 +2,7 @@
     const XHR = XMLHttpRequest.prototype;
     const send = XHR.send;
     const open = XHR.open;
+    const postMessage = window.postMessage.bind(window);
 
     XHR.open = function (method, url) {
         this._url = url;
@@ -10,7 +11,7 @@
 
     XHR.send = function () {
         this.addEventListener('load', function () {
-            window.postMessage({
+            postMessage({
                 type: 'AJAX_DETECTED',
                 method: 'XHR',
                 url: this._url,
@@ -23,7 +24,7 @@
     const originalFetch = window.fetch;
     window.fetch = function () {
         return originalFetch.apply(this, arguments).then(response => {
-            window.postMessage({
+            postMessage({
                 type: 'AJAX_DETECTED',
                 method: 'FETCH',
                 url: response.url,
@@ -32,6 +33,4 @@
             return response;
         });
     };
-
-    console.log('[LinkVerifier] AJAX Monitoring Active');
 })();

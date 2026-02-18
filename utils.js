@@ -33,38 +33,14 @@ var Utils = {
 
     shouldTriggerScanning: function (query) {
         if (!query) return false;
-        const low = query.toLowerCase();
-        return this.TRIGGER_KEYWORDS.some(kw => low.includes(kw));
+        return this.shouldBlockPorn(query).block;
     },
 
     isTrusted: function (domain) {
         const base = this.getBaseDomain(domain);
         return this.TRUSTED_DOMAINS.includes(base);
     },
-    DOMAIN_SCORES: {
-        trusted: [
-            'who.int', 'cdc.gov', 'nih.gov', 'mayoclinic.org', 'webmd.com',
-            'healthline.com', 'medicalnewstoday.com', 'alodokter.com',
-            'halodoc.com', 'klikdokter.com', 'sehatq.com',
-            'wikipedia.org', 'britannica.com', 'khanacademy.org',
-            'coursera.org', 'edx.org', 'scholar.google.com',
-            'bbc.com', 'cnn.com', 'reuters.com', 'apnews.com',
-            'kompas.com', 'detik.com', 'tempo.co', 'liputan6.com',
-            'tirto.id', 'theconversation.com'
-        ],
-        adult: [
-            'pornhub.com', 'xvideos.com', 'xnxx.com', 'redtube.com',
-            'youporn.com', 'xhamster.com', 'spankbang.com', 'tube8.com',
-            'onlyfans.com', 'chaturbate.com', 'stripchat.com',
-            'brazzers.com', 'bangbros.com', 'naughtyamerica.com',
-            'rule34.xxx', 'gelbooru.com', 'nhentai.net'
-        ],
-        questionable: [
-            'reddit.com/r/nsfw', 'imgur.com', 'tumblr.com',
-            '4chan.org', '8kun.top', 'pinterest.com'
-        ]
-    },
-    
+
     // Platforms considered as large verified platforms (social/video/messaging)
     VERIFIED_PLATFORMS: [
         'youtube.com', 'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 'tiktok.com',
@@ -92,22 +68,6 @@ var Utils = {
             'bugil', 'telanjang', 'hentai', 'sex', 'seks', 'ngentot',
             'memek', 'kontol', 'fuck', 'adult', 'explicit'
         ]
-    },
-
-    getDomainScore: function (url) {
-        try {
-            const hostname = new URL(url).hostname.toLowerCase();
-            for (const domain of this.DOMAIN_SCORES.adult) {
-                if (hostname.includes(domain)) return { score: 50, category: 'adult' };
-            }
-            for (const domain of this.DOMAIN_SCORES.trusted) {
-                if (hostname.includes(domain)) return { score: -30, category: 'trusted' };
-            }
-            for (const domain of this.DOMAIN_SCORES.questionable) {
-                if (hostname.includes(domain)) return { score: 20, category: 'questionable' };
-            }
-            return { score: 0, category: 'unknown' };
-        } catch (e) { return { score: 0, category: 'error' }; }
     },
 
     /**
@@ -157,14 +117,12 @@ var Utils = {
         let adultCount = 0;
         let trustedCount = 0;
 
-        const details = results.map(result => {
-            const dScore = this.getDomainScore(result.url);
+        results.forEach(result => {
             const cScore = this.analyzeContent(result.title, result.snippet);
-            const resScore = dScore.score + cScore;
-            totalScore += resScore;
-            if (dScore.category === 'adult') adultCount++;
-            if (dScore.category === 'trusted') trustedCount++;
-            return { resScore, category: dScore.category };
+            totalScore += cScore;
+            
+            if (this.getTrustType(result.url) !== null) trustedCount++;
+            if (cScore > 15) adultCount++;
         });
 
         const avg = results.length > 0 ? totalScore / results.length : 0;

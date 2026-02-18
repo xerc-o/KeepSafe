@@ -121,8 +121,9 @@ class ThumbnailAnalyzer {
 
         selectors.forEach(selector => {
             document.querySelectorAll(selector).forEach(img => {
-                const src = img.src || img.dataset.src || '';
-                if (!src || seenSrcs.has(src)) return;
+                let src = img.src || img.dataset.src || '';
+                // Skip base64 encoded images - not useful for analysis
+                if (!src || src.startsWith('data:') || seenSrcs.has(src)) return;
                 seenSrcs.add(src);
 
                 thumbnails.push({
@@ -162,8 +163,8 @@ class ThumbnailAnalyzer {
         let score = 0;
         const details = { flags: [] };
 
-        // Don't analyze base64 string as URL, but use other metadata
-        const urlPart = (thumbnail.src.length < 200) ? thumbnail.src : '';
+        // Skip base64/CDN URLs longer than 200 chars - not useful for pattern analysis
+        const urlPart = (!thumbnail.src.startsWith('data:') && thumbnail.src.length < 200) ? thumbnail.src : '';
         const fullText = `${urlPart} ${thumbnail.alt} ${thumbnail.title} ${thumbnail.parentText}`.toLowerCase();
 
         // 1. URL Pattern Check
