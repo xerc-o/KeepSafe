@@ -1,0 +1,6 @@
+# Ignore sensitive/development directories
+bahan/
+.DS_Store
+node_modules/
+*.log
+.env
