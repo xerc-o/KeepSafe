@@ -34,7 +34,7 @@
 
 ## 🌟 Tentang KeepSafe
 
-KeepSafe adalah solusi keamanan browsing generasi terbaru yang menggabungkan **AI-powered analysis**, **real-time threat detection**, dan **visual content scanning** untuk memberikan perlindungan komprehensif saat Anda menjelajah internet.
+KeepSafe adalah solusi keamanan browsing generasi terbaru yang menggabungkan **real-time threat detection**, dan **visual content scanning** untuk memberikan perlindungan komprehensif saat Anda menjelajah internet.
 
 ### 🎯 Masalah yang Dipecahkan
 
