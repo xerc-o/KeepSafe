@@ -64,6 +64,12 @@ var Utils = {
             '4chan.org', '8kun.top', 'pinterest.com'
         ]
     },
+    
+    // Platforms considered as large verified platforms (social/video/messaging)
+    VERIFIED_PLATFORMS: [
+        'youtube.com', 'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 'tiktok.com',
+        'linkedin.com', 'whatsapp.com', 'vimeo.com', 'dailymotion.com', 'reddit.com', 'tumblr.com'
+    ],
 
     CONTENT_INDICATORS: {
         educational: [
@@ -102,6 +108,39 @@ var Utils = {
             }
             return { score: 0, category: 'unknown' };
         } catch (e) { return { score: 0, category: 'error' }; }
+    },
+
+    /**
+     * Determine trust type for a given domain or URL.
+     * Returns: 'trusted-domain', 'verified-platform', or null
+     */
+    getTrustType: function (input) {
+        if (!input) return null;
+        try {
+            let host = input;
+            // If it's a full URL, extract hostname
+            if (input.indexOf('://') !== -1 || input.startsWith('http')) {
+                host = new URL(input).hostname;
+            }
+            const base = this.getBaseDomain(host.toLowerCase());
+
+            if (this.TRUSTED_DOMAINS.includes(base)) return 'trusted-domain';
+
+            for (const p of this.VERIFIED_PLATFORMS) {
+                if (base === p || base.endsWith('.' + p)) return 'verified-platform';
+            }
+            return null;
+        } catch (e) { return null; }
+    },
+
+    /**
+     * Human friendly label for trust type
+     */
+    getTrustLabel: function (type) {
+        if (!type) return null;
+        if (type === 'trusted-domain') return 'Trusted Domain';
+        if (type === 'verified-platform') return 'Verified Platform';
+        return null;
     },
 
     analyzeContent: function (title, snippet) {

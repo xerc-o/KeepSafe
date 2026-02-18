@@ -145,7 +145,6 @@
         if (!isEnabled) return;
         if (!tooltip) createTooltip();
 
-        console.log(`[LinkVerifier] Showing ${type} tooltip`);
         let icon = '';
         if (type === 'danger') icon = '<span class="icon">⚠️</span>';
 
@@ -211,10 +210,14 @@
 
         forensicModal.innerHTML = `
             <div class="ks-modal-header">
-                <span class="ks-modal-title">🛡️ Forensic Report</span>
-                <div class="ks-modal-controls">
-                    <button id="ks-pin-btn" title="Pin window">📌</button>
-                    <button id="ks-close-btn" title="Close">✕</button>
+                <span class="ks-modal-title">Link Details</span>
+                <div class="ks-modal-controls" style="display: flex; align-items: center; gap: 8px;">
+                    <button id="ks-pin-btn" title="Pin window" style="padding: 4px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: inherit;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 2h14a1 1 0 011 1v19.293L12 18.586l-8 2.707V3a1 1 0 011-1z"/>
+                        </svg>
+                    </button>
+                    <button id="ks-close-btn" title="Close" style="padding: 4px; display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: inherit;">✕</button>
                 </div>
             </div>
             <div id="ks-modal-body">
@@ -391,9 +394,11 @@
         const tld = hostname.split('.').pop().toLowerCase();
         const pageSourceDomain = window.location.hostname.toLowerCase();
 
-        // 1. Trusted Domains
-        if (Utils.isTrusted(hostname) || hostname.endsWith('.go.id') || hostname.endsWith('.gov')) {
-            return { state: 'safe', details: [{ text: 'Trusted Domain/Verified Platform', type: 'success' }], hostname, tld, entropy: 0, score: 0 };
+        // 1. Trusted Domains / Verified Platforms
+        if (Utils.isTrusted(hostname) || hostname.endsWith('.go.id') || hostname.endsWith('.gov') || Utils.getTrustType(hostname)) {
+            const trustType = Utils.getTrustType(hostname) || (hostname.endsWith('.go.id') || hostname.endsWith('.gov') ? 'trusted-domain' : null);
+            const trustLabel = Utils.getTrustLabel(trustType) || (hostname.endsWith('.go.id') || hostname.endsWith('.gov') ? 'Official Government Domain' : 'Trusted');
+            return { state: 'safe', details: [{ text: trustLabel, type: 'success' }], hostname, tld, entropy: 0, score: 0 };
         }
 
         // 2. Direct IP Address
@@ -486,6 +491,19 @@
         const overlay = document.createElement('div');
         overlay.id = 'ks-block-overlay';
         overlay.className = 'ks-block-overlay';
+
+        // Determine trust type (Trusted Domain / Verified Platform) from details or reason when possible
+        let trustType = null;
+        let trustLabel = null;
+        try {
+            const candidate = (typeof details === 'string' && /\S+\.\S+/.test(details) && !details.includes(' ')) ? details :
+                (typeof reason === 'string' && /\S+\.\S+/.test(reason) && !reason.includes(' ')) ? reason : null;
+            if (candidate) {
+                trustType = Utils.getTrustType(candidate);
+                trustLabel = Utils.getTrustLabel(trustType);
+            }
+        } catch (e) { /* ignore */ }
+
         overlay.innerHTML = `
             <div class="ks-block-content" style="
                 background: linear-gradient(145deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
@@ -562,10 +580,18 @@
                     }
                 </style>
 
-                <div style="width: 80px; height: 80px; margin: 0 auto; background: rgba(239, 68, 68, 0.1); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 44px; border: 1px solid rgba(239, 68, 68, 0.2);">🛡️</div>
+                <div style="width: 100px; height: 100px; margin: 0 auto 24px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(99, 102, 241, 0.03)); border-radius: 28px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(59, 130, 246, 0.12);">
+                    <svg width="70" height="70" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Forbidden icon">
+                        <rect x="4" y="4" width="56" height="56" rx="10" fill="#ffffff" opacity="0.95"/>
+                        <circle cx="32" cy="32" r="18" fill="none" stroke="#dc2626" stroke-width="6" />
+                        <line x1="20" y1="20" x2="44" y2="44" stroke="#dc2626" stroke-width="6" stroke-linecap="round"/>
+                    </svg>
+                </div>
                 
                 <h1 class="ks-block-title">Content Blocked</h1>
                 
+                ${trustLabel ? `<div style="display:flex;justify-content:center;margin:8px 0 12px;"><span style="background:linear-gradient(135deg,#10b981,#059669); color:white; padding:6px 12px; border-radius:999px; font-weight:700; font-size:13px; box-shadow:0 6px 18px rgba(5,150,105,0.12);">${trustLabel}</span></div>` : ''}
+
                 <p class="ks-block-message">
                     KeepSafe has protected you from <span style="color: #fca5a5; font-weight: 700; border-bottom: 2px solid rgba(239, 68, 68, 0.3); padding-bottom: 2px;">${reason}</span> content.
                 </p>
@@ -576,15 +602,12 @@
                 </div>
 
                 <div class="ks-reminder-box">
-                    <div style="color: #f6ad55; font-weight: 800; margin-bottom: 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 16px;">✨</span> Well-being Note
-                    </div>
-                    <div style="color: #fbd38d; font-style: italic; font-size: 15px; line-height: 1.6; font-weight: 500;">
-                        "Love yourself enough to choose better content. Your mental health and time are precious."
+                    <div style="color: #fbd38d; font-style: italic; font-size: 14px; line-height: 1.7; font-weight: 500;">
+                        "Love yourself, become someone you're proud to be."
                     </div>
                 </div>
 
-                <div class="ks-block-actions">
+                <div class="ks-block-actions" style="margin-top: 8px;">
                     <button id="ks-go-back" class="ks-btn-primary">
                         Go Back Safely
                     </button>
@@ -625,7 +648,7 @@
                     updateScanningOverlay('Content Blocked', 'explicit');
                     chrome.runtime.sendMessage({ action: 'scanComplete', decision: result });
                     setTimeout(() => {
-                        injectBlockingOverlay('PORNOGRAPHIC (Visual Analysis)', result.reason);
+                        injectBlockingOverlay('Forbidden (Visual Analysis)', result.reason);
                         hideScanningOverlay();
                     }, 1000);
                     return;
@@ -650,7 +673,7 @@
                 if (staticCheck.block) {
                     updateScanningOverlay('Content Blocked', 'explicit');
                     setTimeout(() => {
-                        injectBlockingOverlay('PORNOGRAPHIC', staticCheck.reason);
+                        injectBlockingOverlay('Forbidden', staticCheck.reason);
                         hideScanningOverlay();
                     }, 1000);
                 } else {
@@ -674,7 +697,7 @@
                 chrome.runtime.sendMessage({ action: 'scanComplete', decision: decision });
 
                 setTimeout(() => {
-                    injectBlockingOverlay('PORNOGRAPHIC (Dynamic Scan)', decision.reason);
+                    injectBlockingOverlay('Forbidden (Dynamic Scan)', decision.reason);
                     hideScanningOverlay();
                 }, 1000);
             } else {
@@ -839,7 +862,7 @@
             const pornCheck = Utils.shouldBlockPorn(searchQuery);
             if (pornCheck.block) {
                 console.log('[LinkVerifier] Pornographic search query detected:', searchQuery, 'Score:', pornCheck.score);
-                injectBlockingOverlay('PORNOGRAPHIC', `Search Query: "${searchQuery}"`);
+                injectBlockingOverlay('Forbidden', `Search Query: "${searchQuery}"`);
                 return;
             }
         }
@@ -852,7 +875,7 @@
 
             if (titleCheck.block || queryCheck.block) {
                 console.log('[LinkVerifier] Pornographic image search detected');
-                injectBlockingOverlay('PORNOGRAPHIC IMAGES', `Filtered search on ${domain}`);
+                injectBlockingOverlay('Forbidden Images', `Filtered search on ${domain}`);
                 return;
             }
         }
@@ -860,7 +883,7 @@
         // 3. Check Known Blacklist
         const blacklisted = Utils.checkBlacklist(domain, blacklistData);
         if (blacklisted === 'porn') {
-            injectBlockingOverlay('PORNOGRAPHIC', domain);
+            injectBlockingOverlay('Forbidden', domain);
             return;
         }
 
@@ -878,7 +901,7 @@
             const titleCheck = Utils.shouldBlockPorn(title);
 
             if (domainCheck.block || titleCheck.block) {
-                injectBlockingOverlay('PORNOGRAPHIC', domainCheck.block ? domain : title);
+                injectBlockingOverlay('Forbidden', domainCheck.block ? domain : title);
             }
         }
     }

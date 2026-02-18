@@ -52,7 +52,7 @@ body.dark-mode {
     /* Corner radius handled by body if it were a window, but popup is a frame */
 }
 
-/* Forensic Report Scoping - Solid Background */
+/* Link Details Scoping - Solid Background */
 .keep-safe-report {
     background-color: var(--body-bg);
     color: var(--text-main);
@@ -60,7 +60,7 @@ body.dark-mode {
     min-height: 100vh;
 }
 
-/* Forensic Report UI */
+/* Link Details UI */
 .keep-safe-report .header {
     border-bottom: 1px solid var(--glass-border);
     padding-bottom: 12px;

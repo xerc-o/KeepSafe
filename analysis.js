@@ -95,10 +95,18 @@ function performAnalysis(url, linkText, blacklistData) {
         }
     }
 
-    // Trusted Domain Check
-    if (hostname.endsWith('.go.id') || hostname.endsWith('.gov') || Utils.isTrusted(hostname)) {
+    // Trusted Domain / Verified Platform Check
+    const trustType = Utils.getTrustType(hostname);
+    if (trustType === 'trusted-domain') {
         riskScore -= 200; // Strong negative score
-        addDetail(ul, 'Official/Trusted Domain detected', 'safe');
+        addDetail(ul, 'Trusted Domain detected', 'safe');
+    } else if (trustType === 'verified-platform') {
+        // Large platforms are generally safe but we reduce score less strongly
+        riskScore -= 100;
+        addDetail(ul, 'Verified Platform detected', 'safe');
+    } else if (hostname.endsWith('.go.id') || hostname.endsWith('.gov')) {
+        riskScore -= 200;
+        addDetail(ul, 'Official Government Domain detected', 'safe');
     }
 
     // IP Address Check
