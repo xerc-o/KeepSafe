@@ -149,7 +149,7 @@ Domains are manually curated:
 ```bash
 # Query analysis
 "apa itu pornografi?" → Should ALLOW (educational)
-"download bokep gratis" → Should BLOCK (explicit)
+"download porn gratis" → Should BLOCK (explicit)
 
 # Domain check
 wikipedia.org → Trust (safe)
